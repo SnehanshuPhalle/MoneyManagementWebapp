@@ -20,17 +20,19 @@ public class SummaryController {
     private ExpenseRepository expenseRepository;
 
     @GetMapping
-    public Map<String, Double> getSummary() {
-        Double totalIncome = incomeRepository.findAll()
+    public Map<String, Double> getSummary(@RequestParam("userId") Long userId) {
+        // Filter income and expense by userId
+        Double totalIncome = incomeRepository.findByUserId(userId)
                 .stream()
                 .mapToDouble(i -> i.getAmount() != null ? i.getAmount() : 0.0)
                 .sum();
 
-        Double totalExpense = expenseRepository.findAll()
+        Double totalExpense = expenseRepository.findByUserId(userId)
                 .stream()
                 .mapToDouble(e -> e.getAmount() != null ? e.getAmount() : 0.0)
                 .sum();
 
+        // Calculate net balance
         Map<String, Double> summary = new HashMap<>();
         summary.put("totalIncome", totalIncome);
         summary.put("totalExpense", totalExpense);
