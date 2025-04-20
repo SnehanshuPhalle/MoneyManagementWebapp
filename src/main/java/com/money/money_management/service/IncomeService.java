@@ -7,6 +7,7 @@ import com.money.money_management.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -18,20 +19,18 @@ public class IncomeService {
     @Autowired
     private UserRepository userRepository;
 
-    // Get all incomes
+    // Existing methods
+
     public List<Income> getAllIncomes() {
         return incomeRepository.findAll();
     }
 
-    // Get income by ID
     public Income getIncomeById(Long id) {
         return incomeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Income not found"));
     }
 
-    // Create a new income (must be linked to an existing user)
     public Income createIncome(Income income) {
-        // Validate if user exists
         if (income.getUser() == null || income.getUser().getId() == 0) {
             throw new RuntimeException("User ID is required");
         }
@@ -43,16 +42,16 @@ public class IncomeService {
         return incomeRepository.save(income);
     }
 
-    // Update income
     public Income updateIncome(Long id, Income updatedIncome) {
         Income existingIncome = incomeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Income not found"));
 
+        existingIncome.setTitle(updatedIncome.getTitle());
+        existingIncome.setDescription(updatedIncome.getDescription());
         existingIncome.setSource(updatedIncome.getSource());
         existingIncome.setAmount(updatedIncome.getAmount());
         existingIncome.setDate(updatedIncome.getDate());
 
-        // Update user if provided
         if (updatedIncome.getUser() != null) {
             User user = userRepository.findById(updatedIncome.getUser().getId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
@@ -62,11 +61,37 @@ public class IncomeService {
         return incomeRepository.save(existingIncome);
     }
 
-    // Delete income
     public void deleteIncome(Long id) {
         if (!incomeRepository.existsById(id)) {
             throw new RuntimeException("Income not found");
         }
         incomeRepository.deleteById(id);
+    }
+
+    // Add filtering/query methods below
+
+    // Get incomes by user ID
+    public List<Income> getIncomesByUser(Long userId) {
+        return incomeRepository.findByUserId(userId);
+    }
+
+    // Get incomes by source (e.g., "SALARY", "FREELANCE")
+    public List<Income> getIncomesBySource(String source) {
+        return incomeRepository.findBySource(source);
+    }
+
+    // Get incomes for a specific month and year
+    public List<Income> getIncomesByUserAndMonthYear(Long userId, int month, int year) {
+        return incomeRepository.findByUserAndMonthYear(userId, month, year);
+    }
+
+    // Get total income for a user in a specific year
+    public Double getTotalIncomeByUserAndYear(Long userId, int year) {
+        return incomeRepository.getTotalIncomeByUserAndYear(userId, year);
+    }
+
+    // Get incomes between a date range
+    public List<Income> getIncomesBetweenDates(LocalDate startDate, LocalDate endDate) {
+        return incomeRepository.findByDateBetween(startDate, endDate);
     }
 }
