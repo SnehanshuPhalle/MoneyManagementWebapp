@@ -1,5 +1,6 @@
 package com.money.money_management.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.money.money_management.enums.IncomeSource;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,5 +33,7 @@ public class Income {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
+
 }

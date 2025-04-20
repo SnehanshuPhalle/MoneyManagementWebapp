@@ -19,6 +19,7 @@ public class IncomeController {
     // Get all incomes
     @GetMapping
     public List<Income> getAllIncomes() {
+        System.out.println("GET /api/incomes hit!");
         return incomeService.getAllIncomes();
     }
 
