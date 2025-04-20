@@ -66,7 +66,9 @@ public class ExpenseService {
 
         // Budget check by category (and optionally user)
         String category = expense.getCategory();
-        Optional<Budget> budgetOpt = budgetService.getBudgetByCategoryAndYearAndMonth(category, year, month);
+        Long userId = (long) expense.getUser().getId();
+        Optional<Budget> budgetOpt = budgetService.getBudgetByCategoryAndYearAndMonth(category, year, month, userId);
+
 
         if (budgetOpt.isPresent()) {
             Budget budget = budgetOpt.get();

@@ -1,5 +1,6 @@
 package com.money.money_management.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
@@ -19,15 +20,21 @@ public class Budget {
 
     private boolean isDefault; // Flag to indicate if this is a default budget.
 
+    @ManyToOne(fetch = FetchType.LAZY) // Many budgets can belong to one user
+    @JoinColumn(name = "user_id") // Foreign key column for user
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private User user; // This represents the user associated with the budget.
+
     // Constructors
     public Budget() {}
 
-    public Budget(String category, Double limitAmount, int year, int month, boolean isDefault) {
+    public Budget(String category, Double limitAmount, int year, int month, boolean isDefault, User user) {
         this.category = category;
         this.limitAmount = limitAmount;
         this.year = year;
         this.month = month;
         this.isDefault = isDefault;
+        this.user = user;
     }
 
     // Getters and Setters
@@ -77,5 +84,13 @@ public class Budget {
 
     public void setDefault(boolean isDefault) {
         this.isDefault = isDefault;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

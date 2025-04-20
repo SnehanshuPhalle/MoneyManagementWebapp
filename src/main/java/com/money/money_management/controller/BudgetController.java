@@ -1,12 +1,12 @@
 package com.money.money_management.controller;
 
-
 import com.money.money_management.model.Budget;
 import com.money.money_management.service.BudgetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/budget")
@@ -16,44 +16,41 @@ public class BudgetController {
     @Autowired
     private BudgetService budgetService;
 
-    // Endpoint to set or update the budget
+    // ✅ Set or update budget (POST /api/budget?userId=1)
     @PostMapping
-    public Budget setBudget(@RequestBody Budget budget) {
-        return budgetService.setBudget(budget);
+    public Budget setBudget(@RequestBody Budget budget, @RequestParam Long userId) {
+        return budgetService.setBudget(budget, userId);
     }
 
-    // Endpoint to get budget by category (with or without year/month, based on the logic in service)
+    // ✅ Get default budget by category (GET /api/budget/default/Food?userId=1)
     @GetMapping("/default/{category}")
-    public Optional<Budget> getBudget(@PathVariable String category) {
-        return budgetService.getBudgetByCategory(category);
+    public Optional<Budget> getDefaultBudget(@PathVariable String category, @RequestParam Long userId) {
+        return budgetService.getDefaultBudgetByCategory(category, userId);
     }
 
-    // Endpoint to get budget by category (with or without year/month, based on the logic in service)
-    // @GetMapping("/{category}")
-    // public Optional<Budget> getBudget2(@PathVariable String category) {
-    //     return budgetService.getBudgetByCategory(category);
-    // }
-
-    // Get budget by category, year, and month
+    // ✅ Get budget by category, year, and month (GET /api/budget/Food/2025/4?userId=1)
     @GetMapping("/{category}/{year}/{month}")
     public Optional<Budget> getBudget(@PathVariable String category,
                                       @PathVariable int year,
-                                      @PathVariable int month) {
-        return budgetService.getBudgetByCategoryAndYearAndMonth(category, year, month);
+                                      @PathVariable int month,
+                                      @RequestParam Long userId) {
+        return budgetService.getBudgetByCategoryAndYearAndMonth(category, year, month, userId);
     }
 
-    // Endpoint to delete a budget by ID
+    // ✅ Delete a budget by ID (DELETE /api/budget/3?userId=1)
     @DeleteMapping("/{id}")
-    public void deleteBudget(@PathVariable Long id) {
-        budgetService.deleteBudget(id);
+    public void deleteBudget(@PathVariable Long id, @RequestParam Long userId) {
+        budgetService.deleteBudget(id, userId);
     }
 
-    // New endpoint to check if the expense exceeds the budget
+    // ✅ Check if the expense exceeds the budget (GET /api/budget/check/Food/2025/4/5500?userId=1)
     @GetMapping("/check/{category}/{year}/{month}/{expenseAmount}")
     public String checkBudgetExceed(@PathVariable String category,
                                     @PathVariable int year,
                                     @PathVariable int month,
-                                    @PathVariable double expenseAmount) {
-        return budgetService.checkIfBudgetExceeded(category, year, month, expenseAmount);
+                                    @PathVariable double expenseAmount,
+                                    @RequestParam Long userId) {
+        return budgetService.checkIfBudgetExceeded(category, year, month, expenseAmount, userId);
     }
+
 }
